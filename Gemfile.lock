@@ -1,0 +1,27 @@
+PATH
+  remote: .
+  specs:
+    gammo (0.1.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    erubi (1.9.0)
+    power_assert (1.1.5)
+    rake (12.3.3)
+    test-unit (3.3.5)
+      power_assert
+    yard (0.9.20)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  erubi
+  gammo!
+  rake (~> 12.0)
+  test-unit (~> 3.3.5)
+  yard
+
+BUNDLED WITH
+   2.0.2
