@@ -1,5 +1,12 @@
 # Gammo - A pure-Ruby HTML5 parser
 
+[![Build Status](https://travis-ci.org/namusyaka/gammo.svg?branch=master)](https://travis-ci.org/namusyaka/gammo)
+[![GitHub issues](https://img.shields.io/github/issues/namusyaka/gammo)](https://github.com/namusyaka/gammo/issues)
+[![GitHub forks](https://img.shields.io/github/forks/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/network)
+[![GitHub stars](https://img.shields.io/github/stars/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/stargazers)
+[![GitHub license](https://img.shields.io/github/license/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/blob/master/LICENSE.txt)
+[![Documentation](http://img.shields.io/:yard-docs-38c800.svg)](http://www.rubydoc.info/gems/gammo/frames)
+
 Gammo is an implementation of the HTML5 parsing algorithm which conforms [the WHATWG specification](https://html.spec.whatwg.org/multipage/parsing.html), without any dependencies. Given an HTML string, Gammo parses it and builds DOM tree based on the tokenization and tree-construction algorithm defined in WHATWG parsing algorithm.
 
 Gammo, its naming is inspired by [Gumbo](https://github.com/google/gumbo-parser). But Gammo is a fried tofu fritter made with vegetables.
