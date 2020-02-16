@@ -15,7 +15,7 @@ Gammo, its naming is inspired by [Gumbo](https://github.com/google/gumbo-parser)
 require 'gammo'
 require 'open-uri'
 
-parser = Gammo.new(open('https://google.com'))
+parser = open('https://google.com') { |f| Gammo.new(f.read) }
 parser.parse #=> #<Gammo::Node::Document>
 ```
 
