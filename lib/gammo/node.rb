@@ -1,3 +1,5 @@
+require 'gammo/attributes'
+
 module Gammo
   # Class for representing Node.
   # https://html.spec.whatwg.org/multipage/parsing.html#tokenization
@@ -60,7 +62,7 @@ module Gammo
       @tag        = tag
       @data       = data
       @namespace  = namespace
-      @attributes = attributes
+      @attributes = Attributes.new(attributes)
     end
 
     # Inserts a node before a reference node as a child of a specified parent node.
