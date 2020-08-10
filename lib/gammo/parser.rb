@@ -319,7 +319,9 @@ module Gammo
 
     # @!visibility private
     def add_element
-      add_child(Node::Element.new(tag: token.tag, data: token.data, attributes: token.attributes))
+      elm = Node::Element.new(tag: token.tag, data: token.data)
+      elm.attributes = Attributes.new(token.attributes, owner_element: elm)
+      add_child(elm)
     end
 
     # @!visibility private

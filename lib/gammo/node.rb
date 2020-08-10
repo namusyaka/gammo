@@ -1,37 +1,10 @@
+require 'gammo/xpath'
 require 'gammo/attributes'
 
 module Gammo
   # Class for representing Node.
   # https://html.spec.whatwg.org/multipage/parsing.html#tokenization
   class Node
-    # Represents the error token.
-    Error = Class.new(Node)
-
-    # Represents the text token.
-    Text = Class.new(Node)
-
-    # Represents the root document token.
-    Document = Class.new(Node)
-
-    # Represents the element token including start, end and self-closing token.
-    Element = Class.new(Node)
-
-    # Represents the comment token like "<!-- foo -->".
-    Comment = Class.new(Node) 
-
-    # Represents the document type token.
-    Doctype = Class.new(Node) 
-
-    # Represents the marker defined in 12.2.4.3.
-    # https://html.spec.whatwg.org/multipage/parsing.html#tokenization
-    ScopeMarker = Class.new(Node)
-
-    # Default scope marker is inserted when entering applet,
-    # object, marquee, template, td, th, and caption elements, and are used
-    # to prevent formatting from "leaking" into applet, object, marquee,
-    # template, td, th, and caption elements"
-    DEFAULT_SCOPE_MARKER = Node::ScopeMarker.new
-
     # Raised if uncaught node is given for particular operations.
     # @!visibility private
     UncaughtTypeError = Class.new(ArgumentError)
@@ -50,19 +23,105 @@ module Gammo
     attr_accessor :previous_sibling, :next_sibling
 
     # Properties required to represent node.
-    attr_accessor :tag, :data, :namespace, :attributes
+    attr_accessor :tag, :data, :namespace
+
+    # Reader for attributes associated with this node.
+    attr_reader :attributes
+
+    # Represents the error token.
+    Error = Class.new(Node)
+
+    def text_content
+      nil
+    end
+
+    def get_attribute_node(key, namespace: nil)
+      attributes.find { |attr| attr.key == key && attr.namespace == namespace }
+    end
+
+    def each_descendant
+      stack = [self]
+      until stack.empty?
+        node = stack.pop
+        yield node unless node == self
+        stack << node.next_sibling if node != self && node.next_sibling
+        stack << node.first_child if node.first_child
+      end
+    end
+
+    # Represents the text token.
+    class Text < Node
+      alias_method :text_content, :data
+      alias_method :to_s, :text_content
+    end
+
+    # Represents the root document token.
+    class Document < Node
+      include XPath
+    end
+
+    # Represents the element token including start, end and self-closing token.
+    class Element < Node
+
+      # TODO: The current innerText() implementation does not conform to WHATWG spec.
+      # https://html.spec.whatwg.org/multipage/dom.html#the-innertext-idl-attribute
+      def inner_text
+        text = ''
+        each_descendant { |node| text << node.data if node.instance_of?(Text) }
+        text
+      end
+
+      def to_s
+        s = "<#{tag}"
+        attrs = attributes_to_string
+        s << ' ' unless attrs.empty?
+        s << "#{attrs}>"
+      end
+
+      private
+
+      def attributes_to_string
+        attributes.each_with_object([]) { |attr, attrs|
+          attrs << "#{attr.key}=#{attr.value}"
+        }.join(?\s)
+      end
+    end
+
+    # Represents the comment token like "<!-- foo -->".
+    Comment = Class.new(Node) 
+
+    # Represents the document type token.
+    Doctype = Class.new(Node) 
+
+    # Represents the marker defined in 12.2.4.3.
+    # https://html.spec.whatwg.org/multipage/parsing.html#tokenization
+    ScopeMarker = Class.new(Node)
+
+    # Default scope marker is inserted when entering applet,
+    # object, marquee, template, td, th, and caption elements, and are used
+    # to prevent formatting from "leaking" into applet, object, marquee,
+    # template, td, th, and caption elements"
+    DEFAULT_SCOPE_MARKER = Node::ScopeMarker.new
 
     # Constructs a node which represents HTML element node.
     # @param [String] tag
     # @param [String] data
     # @param [String, NilClass] namespace
-    # @param [Hash(String => String)] attributes
+    # @param [Gammo::Attributes] attributes
     # @return [Gammo::Node]
-    def initialize(tag: nil, data: nil, namespace: nil, attributes: [])
+    def initialize(tag: nil, data: nil, namespace: nil, attributes: Attributes.new([]))
       @tag        = tag
       @data       = data
       @namespace  = namespace
-      @attributes = Attributes.new(attributes)
+      @attributes = Attributes.new(attributes, owner_element: self)
+    end
+
+    # Sets attributes in self.
+    # @param [Gammo::Attributes] attrs
+    def attributes=(attrs)
+      cloned = attrs.dup
+      cloned.each { |attr| attr.owner_element = self }
+      @attributes = cloned
     end
 
     # Inserts a node before a reference node as a child of a specified parent node.
@@ -142,6 +201,39 @@ module Gammo
         attributes: attributes,
         type: self.class
       }
+    end
+
+    # Select all nodes whose the evaluation of a given block is true.
+    def select(&block)
+      nodes = []
+      stack = [self]
+      until stack.empty?
+        node = stack.pop
+        nodes << node if block.call(node)
+        stack << node.next_sibling if node.next_sibling
+        stack << node.first_child if node.first_child
+      end
+      nodes
+    end
+
+    def children
+      ret = []
+      child = first_child
+      while child
+        ret << child
+        child = child.next_sibling
+      end
+      ret
+    end
+
+    def owner_document
+      node = self
+      node = node.parent until node.document?
+      node
+    end
+
+    def document?
+      self.instance_of?(Document)
     end
 
     private
