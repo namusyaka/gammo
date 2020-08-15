@@ -23,3 +23,9 @@ task :generate do
   table = eval(Erubi::Engine.new(File.read('misc/table.erubi')).src, binding)
   File.write('lib/gammo/tags/table.rb', table)
 end
+
+namespace :racc do
+  task :parser do
+    `bundle exec racc lib/gammo/xpath/parser.y -o lib/gammo/xpath/parser.rb`
+  end
+end

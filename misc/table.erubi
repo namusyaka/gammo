@@ -7,7 +7,7 @@ module Gammo
 
     TABLE = {
       <%- @tags.each do |tag|-%>
-      '<%= tag %>' => <%= camelize(tag.capitalize) %>,
+      '<%= tag %>' => <%= camelize(tag) %>,
       <%- end -%>
     }
   end
