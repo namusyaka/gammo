@@ -2,16 +2,16 @@ $LOAD_PATH.unshift  File.join(__dir__, '..')
 require 'test_helper'
 
 class XPath::ValueTest < Test::Unit::TestCase
-  def setup
+  setup do
     @doc = Gammo.new('').parse
   end
 
-  def test_evaluate
+  test '#evaluate' do
     b = Gammo::XPath::AST::Value::Boolean.new(true)
     assert_equal b, b.evaluate(nil)
   end
 
-  def test_node_set
+  test 'node set' do
     ns = Gammo::XPath::AST::Value::NodeSet.new([])
     assert_equal false, ns.to_bool
     assert_equal 0, ns.to_number
@@ -22,7 +22,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute ns.string?
   end
 
-  def test_node_set_with_node
+  test 'nodeset with node' do
     ns = Gammo::XPath::NodeSet.new
     ns << Gammo::Node::Element.new(tag: 'a', data: 'hello')
     ns << Gammo::Node::Element.new(tag: 'a', data: 'world')
@@ -36,7 +36,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute nsv.string?
   end
 
-  def test_boolean
+  test 'boolean' do
     b = Gammo::XPath::AST::Value::Boolean.new(true)
     assert_equal 'true', b.to_s
     assert_equal 1, b.to_number
@@ -47,7 +47,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute b.string?
   end
 
-  def test_string
+  test 'string' do
     s = Gammo::XPath::AST::Value::String.new('hello')
     assert_equal 'hello', s.to_s
     assert_equal 0, s.to_number
@@ -58,7 +58,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute s.bool?
   end
 
-  def test_string_with_empty
+  test 'string with empty' do
     s = Gammo::XPath::AST::Value::String.new('')
     assert_equal '', s.to_s
     assert_equal 0, s.to_number
@@ -69,7 +69,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute s.bool?
   end
 
-  def test_number
+  test 'number' do
     n = Gammo::XPath::AST::Value::Number.new(1)
     assert_equal '1', n.to_s
     assert_equal 1, n.to_number
@@ -80,7 +80,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute n.bool?
   end
 
-  def test_number_with_zero
+  test 'number with zero' do
     n = Gammo::XPath::AST::Value::Number.new(0)
     assert_equal '0', n.to_s
     assert_equal 0, n.to_number
@@ -91,21 +91,21 @@ class XPath::ValueTest < Test::Unit::TestCase
     refute n.bool?
   end
 
-  def test_variable_reference
+  test 'variable reference' do
     v = Gammo::XPath::AST::Value::VariableReference.new('var')
     s = v.evaluate(Gammo::XPath::Context.new(node: nil, variables: {var: 'hello'}))
     assert s.instance_of?(Gammo::XPath::AST::Value::String)
     assert_equal 'hello', s.to_s
   end
 
-  def test_variable_reference_with_number
+  test 'variable reference with number' do
     v = Gammo::XPath::AST::Value::VariableReference.new('var')
     n = v.evaluate(Gammo::XPath::Context.new(node: nil, variables: {var: 1}))
     assert n.instance_of?(Gammo::XPath::AST::Value::Number)
     assert_equal 1, n.to_number
   end
 
-  def test_to_node_set
+  test '#to_node_set' do
     ns = Gammo::XPath::NodeSet.new
     ns << Gammo::Node::Element.new(tag: 'a', data: 'hello')
     ns << Gammo::Node::Element.new(tag: 'a', data: 'world')
@@ -114,7 +114,7 @@ class XPath::ValueTest < Test::Unit::TestCase
     assert_equal ns, nsv.to_node_set(ctx)
   end
 
-  def test_to_node_set_with_bool
+  test '#to_node_set with boolean' do
     b = Gammo::XPath::AST::Value::Boolean.new(true)
     ctx = Gammo::XPath::Context.new(node: nil)
     assert b.to_node_set(ctx).empty?

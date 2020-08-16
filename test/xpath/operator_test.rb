@@ -2,7 +2,7 @@ $LOAD_PATH.unshift  File.join(__dir__, '..')
 require 'test_helper'
 
 class XPath::OperatorTest < Test::Unit::TestCase
-  def setup
+  setup do
     @doc = Gammo.new(<<-EOS).parse
 <!DOCTYPE html>
 <html>
@@ -24,21 +24,21 @@ class XPath::OperatorTest < Test::Unit::TestCase
     EOS
   end
 
-  def test_eq
+  test 'eq' do
     ns = @doc.xpath('//*[@id = "foo"]')
     assert_equal 1, ns.length
     assert_equal Gammo::Tags::Div, ns.first.tag
     assert_equal 'world', ns.first.inner_text
   end
 
-  def test_neq
+  test 'neq' do
     ns = @doc.xpath('//div[@id != "foo"]')
     assert_equal 1, ns.length
     assert_equal Gammo::Tags::Div, ns.first.tag
     assert_equal 'baz', ns.first.inner_text
   end
 
-  def test_lt
+  test 'lt' do
     ns = @doc.xpath('//option[@value < 3]')
     assert_equal 2, ns.length
     assert ns.all? { |node| node.tag == Gammo::Tags::Option }
@@ -46,7 +46,7 @@ class XPath::OperatorTest < Test::Unit::TestCase
     assert_equal '2', ns[1].attributes[:value]
   end
 
-  def test_gt
+  test 'gt' do
     ns = @doc.xpath('//option[@value > 2]')
     assert_equal 2, ns.length
     assert ns.all? { |node| node.tag == Gammo::Tags::Option }
@@ -54,7 +54,7 @@ class XPath::OperatorTest < Test::Unit::TestCase
     assert_equal '4', ns[1].attributes[:value]
   end
 
-  def test_lte
+  test 'lte' do
     ns = @doc.xpath('//option[@value <= 3]')
     assert_equal 3, ns.length
     assert ns.all? { |node| node.tag == Gammo::Tags::Option }
@@ -63,7 +63,7 @@ class XPath::OperatorTest < Test::Unit::TestCase
     assert_equal '3', ns[2].attributes[:value]
   end
 
-  def test_gte
+  test 'gte' do
     ns = @doc.xpath('//option[@value >= 2]')
     assert_equal 3, ns.length
     assert ns.all? { |node| node.tag == Gammo::Tags::Option }
@@ -72,31 +72,31 @@ class XPath::OperatorTest < Test::Unit::TestCase
     assert_equal '4', ns[2].attributes[:value]
   end
 
-  def test_plus
+  test 'plus' do
     ns = @doc.xpath('//option[@value=1+2]')
     assert_equal 1, ns.length
     assert_equal '3', ns[0].attributes[:value]
   end
 
-  def test_minus
+  test 'minus' do
     ns = @doc.xpath('//option[@value=2-1]')
     assert_equal 1, ns.length
     assert_equal '1', ns[0].attributes[:value]
   end
 
-  def test_multiply
+  test 'multiply' do
     ns = @doc.xpath('//option[@value=2*2]')
     assert_equal 1, ns.length
     assert_equal '4', ns[0].attributes[:value]
   end
 
-  def test_divided
+  test 'divided' do
     ns = @doc.xpath('//option[@value=2 div 2]')
     assert_equal 1, ns.length
     assert_equal '1', ns[0].attributes[:value]
   end
 
-  def test_mod
+  test 'mod' do
     ns = @doc.xpath('//option[@value=3 mod 2]')
     assert_equal 1, ns.length
     assert_equal '1', ns[0].attributes[:value]

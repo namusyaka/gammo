@@ -1,33 +1,32 @@
 require "test_helper"
 
 class AttributesTest < Test::Unit::TestCase
-
-  def setup
+  setup do
     @attributes = Gammo::Attributes.new([Gammo::Attribute.new(key: :a, value: :b)])
   end
 
-  def test_reference
+  test 'reference' do
     assert_equal :b, @attributes[:a]
   end
 
-  def test_setter
+  test 'setter' do
     @attributes[:c] = :d
     assert_equal :d, @attributes[:c]
   end
 
-  def test_append
+  test 'append' do
     @attributes.append(Gammo::Attribute.new(key: :c, value: :d)) 
     assert_equal :d, @attributes[:c]
   end
 
-  def test_prepend
+  test 'prepend' do
     ret = @attributes.prepend(Gammo::Attribute.new(key: :c, value: :d), Gammo::Attribute.new(key: :e, value: :f))
     assert_equal @attributes, ret
     assert_equal :d, @attributes[:c]
     assert_equal :f, @attributes[:e]
   end
 
-  def test_pop
+  test 'pop' do
     @attributes << Gammo::Attribute.new(key: :c, value: :d)
     last = @attributes.last
     ret = @attributes.pop
@@ -36,7 +35,7 @@ class AttributesTest < Test::Unit::TestCase
     assert_equal 1, @attributes.length
   end
 
-  def test_shift
+  test 'shift' do
     @attributes << Gammo::Attribute.new(key: :c, value: :d)
     first = @attributes.first
     ret = @attributes.shift
@@ -45,19 +44,19 @@ class AttributesTest < Test::Unit::TestCase
     assert_equal 1, @attributes.length
   end
 
-  def test_delete
+  test 'delete' do
     first = @attributes.first
     assert_equal first, @attributes.delete(first)
     assert_equal 0, @attributes.length
   end
 
-  def test_delete_if
+  test 'delete_if' do
     ret = @attributes.delete_if { |x| x.key == :a }
     assert_equal 0, @attributes.length
     assert_equal @attributes, ret
   end
 
-  def test_reject!
+  test 'reject!' do
     ret = @attributes.reject! { |x| x.key == :e }
     assert_nil ret
     ret = @attributes.reject! { |x| x.key == :a }

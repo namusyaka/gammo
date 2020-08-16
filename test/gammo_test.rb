@@ -1,11 +1,11 @@
 require "test_helper"
 
 class GammoTest < Test::Unit::TestCase
-  def test_that_it_has_a_version_number
+  test 'has a version number' do
     refute_nil ::Gammo::VERSION
   end
 
-  def test_that_new_constructs_parser
+  test '#new constructs a parser' do
     assert Gammo::Parser.new('</').instance_of?(Gammo::Parser)
   end
 end
