@@ -7,7 +7,8 @@
 [![GitHub license](https://img.shields.io/github/license/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/blob/master/LICENSE.txt)
 [![Documentation](http://img.shields.io/:yard-docs-38c800.svg)](http://www.rubydoc.info/gems/gammo/frames)
 
-Gammo is an implementation of the HTML5 parsing algorithm which conforms [the WHATWG specification](https://html.spec.whatwg.org/multipage/parsing.html), without any dependencies. Given an HTML string, Gammo parses it and builds DOM tree based on the tokenization and tree-construction algorithm defined in WHATWG parsing algorithm.
+Gammo provides a pure Ruby HTML5-compliant parser and XPath support for traversing the DOM tree built by Gammo.
+The implementation of the HTML5 parsing algorithm in Gammo conforms [the WHATWG specification](https://html.spec.whatwg.org/multipage/parsing.html). Given an HTML string, Gammo parses it and builds DOM tree based on the tokenization and tree-construction algorithm defined in WHATWG parsing algorithm, these implementations are provided without any external dependencies.
 
 Gammo, its naming is inspired by [Gumbo](https://github.com/google/gumbo-parser). But Gammo is a fried tofu fritter made with vegetables.
 
@@ -15,8 +16,10 @@ Gammo, its naming is inspired by [Gumbo](https://github.com/google/gumbo-parser)
 require 'gammo'
 require 'open-uri'
 
-parser = open('https://google.com') { |f| Gammo.new(f.read) }
-parser.parse #=> #<Gammo::Node::Document>
+parser = URI.open('https://google.com') { |f| Gammo.new(f.read) }
+document = parser.parse #=> #<Gammo::Node::Document>
+
+puts document.xpath('//title').first.inner_text #=> 'Google'
 ```
 
 ## Overview
