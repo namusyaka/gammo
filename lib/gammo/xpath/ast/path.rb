@@ -1,3 +1,4 @@
+require 'set'
 require 'gammo/xpath/node_set'
 
 module Gammo

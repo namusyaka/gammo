@@ -1,3 +1,4 @@
+require 'set'
 require 'gammo/xpath/ast/value'
 
 module Gammo
