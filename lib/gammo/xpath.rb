@@ -24,7 +24,7 @@ module Gammo
       # @param [String] expr
       # @param [Integer] result_type
       # @!visibility private
-      def initialize(expr:, result_type:)
+      def initialize(expr, result_type)
         @expr = expr
         @result_type = result_type
       end
@@ -65,10 +65,9 @@ module Gammo
     # @param [Gammo::Node] context_node
     # @return [String, Integer, TrueClass, FalseClass, Gammo::XPath::NodeSet]
     def xpath(expr, variables: {}, result_type: UNORDERED_NODE_ITERATOR_TYPE, context_node: self)
-      Traverser.new(
-        expr: expr,
-        result_type: result_type,
-      ).evaluate(Context.new(node: context_node, variables: variables))
+      Traverser.new(expr, result_type).evaluate(
+        Context.new(node: context_node, variables: variables)
+      )
     end
   end
 end
