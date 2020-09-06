@@ -2,7 +2,7 @@ require 'simplecov'
 
 SimpleCov.start do
   project_name 'gammo'
-  minimum_coverage 95
+  minimum_coverage 90
   coverage_dir '.coverage'
 
   add_filter '/test/'
