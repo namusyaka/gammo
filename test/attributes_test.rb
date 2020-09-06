@@ -15,11 +15,13 @@ class AttributesTest < Test::Unit::TestCase
   end
 
   test 'append' do
+    return if RUBY_VERSION < '2.5.0'
     @attributes.append(Gammo::Attribute.new(key: :c, value: :d)) 
     assert_equal :d, @attributes[:c]
   end
 
   test 'prepend' do
+    return if RUBY_VERSION < '2.5.0'
     ret = @attributes.prepend(Gammo::Attribute.new(key: :c, value: :d), Gammo::Attribute.new(key: :e, value: :f))
     assert_equal @attributes, ret
     assert_equal :d, @attributes[:c]
