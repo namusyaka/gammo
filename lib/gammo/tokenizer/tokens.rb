@@ -14,6 +14,15 @@ module Gammo
       def concat(s)
         data << s
       end
+
+      def to_s
+        s = "<#{self.class}"
+        members = []
+        members << "tag=\"#{tag}\"" if tag
+        members << "data=\"#{data}\"" if data
+        members << "attributes=\"#{attributes}\"" if attributes && !attributes.empty?
+        "<#{self.class} #{members.join(' ')}>"
+      end
     end
 
     class EscapedToken < BaseToken
