@@ -90,7 +90,8 @@ module Gammo
       end
 
       def default(_)
-        parser.parse_implied_token(Tokenizer::EndTagToken, Tags::Head, Tags::Head.to_s)
+        parser.open_elements.pop
+        parser.insertion_mode = AfterHead
         halt false
       end
     end
