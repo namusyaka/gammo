@@ -7,7 +7,7 @@ module Gammo
         halt true
       end
 
-      def text_token(token)
+      def character_token(token)
         halt InBody.new(parser).process if token.data.lstrip.length.zero?
       end
 

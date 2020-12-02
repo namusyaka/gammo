@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.9.
     class InTable < InsertionMode
-      def text_token(token)
+      def character_token(token)
         token.data = token.data.gsub("\x00", "")
         case parser.open_elements.last.tag
         when Tags::Table, Tags::Tbody, Tags::Tfoot, Tags::Thead, Tags::Tr

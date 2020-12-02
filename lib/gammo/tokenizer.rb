@@ -62,7 +62,7 @@ module Gammo
         if pos < (scanner.pos - 2)
           scanner.pos -= 2
           buffer = buffer.slice(0, buffer.length - 2)
-          return text_token(buffer)
+          return character_token(buffer)
         end
         case byte
         when %r{[a-zA-Z]}
@@ -71,7 +71,7 @@ module Gammo
         when ?!           then return scan_markup_declaration
         when ??           then return comment_token(?? + scan_until_close_angle)
         when ?/
-          return text_token(buffer) if scanner.eos?
+          return character_token(buffer) if scanner.eos?
           # "</>" does not generate a token at all. treat this as empty comment token.
           return comment_token('') if scan(/>/)
           # Expects chars like "</a"
@@ -89,7 +89,7 @@ module Gammo
           next
         end
       end
-      return text_token(buffer) if pos < scanner.pos
+      return character_token(buffer) if pos < scanner.pos
       EOS
     end
 
@@ -106,7 +106,7 @@ module Gammo
           scan_raw_or_rcdata
         else
           @raw = true
-          text_token(scan_until(/\z/) || '')
+          character_token(scan_until(/\z/) || '')
         end
       if token && scanner.pos > pos
         @convert_null      = true
@@ -145,11 +145,11 @@ module Gammo
       end
       @raw = raw_tag != 'textarea' && raw_tag != 'title'
       @raw_tag = ''
-      text_token(buffer) unless buffer.empty?
+      character_token(buffer) unless buffer.empty?
     end
 
     def scan_script
-      text_token(ScriptScanner.new(scanner, raw_tag: raw_tag).scan)
+      character_token(ScriptScanner.new(scanner, raw_tag: raw_tag).scan)
     end
 
     def scan_start_tag
@@ -325,7 +325,7 @@ module Gammo
       buffer = ''
       loop do
         byte = scanner.get_byte
-        return text_token(buffer) unless byte
+        return character_token(buffer) unless byte
         buffer << byte
         case byte
         when ?]
@@ -340,7 +340,7 @@ module Gammo
           brackets = 0
         end
       end
-      text_token(buffer)
+      character_token(buffer)
     end
 
     RAW_TAGS = ['iframe', 'noembed', 'noframes', 'noscript', 'plaintext', 'script', 'style', 'textarea', 'title', 'xmp'].freeze
@@ -350,8 +350,8 @@ module Gammo
       RAW_TAGS.include?(name)
     end
 
-    def text_token(text)
-      TextToken.new(text, raw: raw, convert_null: convert_null)
+    def character_token(text)
+      CharacterToken.new(text, raw: raw, convert_null: convert_null)
     end
 
     def error_token(pos)

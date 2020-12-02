@@ -12,7 +12,7 @@ module Gammo
       def process
         case token = parser.token
         when Tokenizer::ErrorToken          then consume(:error_token)
-        when Tokenizer::TextToken           then consume(:text_token)
+        when Tokenizer::CharacterToken      then consume(:character_token)
         when Tokenizer::StartTagToken       then consume(:start_tag_token)
         when Tokenizer::EndTagToken         then consume(:end_tag_token)
         when Tokenizer::SelfClosingTagToken then consume(:self_closing_tag_token)

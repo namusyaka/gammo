@@ -65,7 +65,7 @@ module Gammo
     end
 
     ErrorToken          = Class.new(BaseToken)
-    TextToken           = Class.new(EscapedToken)
+    CharacterToken      = Class.new(EscapedToken)
     StartTagToken       = Class.new(BaseToken)
     EndTagToken         = Class.new(BaseToken)
     SelfClosingTagToken = Class.new(BaseToken)
