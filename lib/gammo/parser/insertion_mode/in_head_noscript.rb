@@ -36,7 +36,7 @@ module Gammo
         end
       end
 
-      def text_token(token)
+      def character_token(token)
         halt InHead.new(parser).process if token.data.lstrip == ''
       end
 

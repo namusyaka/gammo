@@ -177,7 +177,7 @@ module Gammo
 
       def parse_foreign_content
         case token
-        when Tokenizer::TextToken
+        when Tokenizer::CharacterToken
           self.frameset_ok = token.data.lstrip.sub(/\A\x00*/, '').lstrip.empty? if frameset_ok
           token.data = token.data.gsub(/\x00/, "\ufffd")
           add_text token.data
@@ -249,11 +249,11 @@ module Gammo
         if math_ml_text_integration_point?(node)
           return false if token.instance_of?(Tokenizer::StartTagToken) && token.tag != Tags::Mglyph &&
             token.tag != Tags::Malignmark
-          return false if token.instance_of?(Tokenizer::TextToken)
+          return false if token.instance_of?(Tokenizer::CharacterToken)
         end
         return false if node.namespace == 'math' && node.tag == Tags::AnnotationXml && \
           token.instance_of?(Tokenizer::StartTagToken) && token.tag == Tags::Svg
-        return false if html_integration_point?(node) && (token.instance_of?(Tokenizer::StartTagToken) || token.instance_of?(Tokenizer::TextToken))
+        return false if html_integration_point?(node) && (token.instance_of?(Tokenizer::StartTagToken) || token.instance_of?(Tokenizer::CharacterToken))
         return false if token.instance_of? Tokenizer::ErrorToken
         true
       end

@@ -6,7 +6,7 @@ module Gammo
         parser.open_elements.pop
       end
 
-      def text_token(token)
+      def character_token(token)
         d = token.data
         n = parser.open_elements.last
         if n.tag == Tags::Textarea && n.first_child.nil?

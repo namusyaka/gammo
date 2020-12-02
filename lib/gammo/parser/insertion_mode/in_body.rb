@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.6.
     class InBody < InsertionMode
-      def text_token(token)
+      def character_token(token)
         data = token.data
         node = parser.open_elements.last
         case node.tag

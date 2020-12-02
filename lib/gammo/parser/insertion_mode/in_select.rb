@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.16.
     class InSelect < InsertionMode
-      def text_token(token)
+      def character_token(token)
         parser.add_text token.data.gsub("\x00",'')
       end
 

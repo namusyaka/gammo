@@ -4,7 +4,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.1
     class Initial < InsertionMode
-      def text_token(token)
+      def character_token(token)
         token.data = token.data.lstrip
         # it's all whitespace so ignore it.
         halt true if token.data.length.zero?

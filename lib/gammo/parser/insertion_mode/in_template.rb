@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.18.
     class InTemplate < InsertionMode
-      def text_token(token)
+      def character_token(token)
         halt InBody.new(parser).process
       end
 

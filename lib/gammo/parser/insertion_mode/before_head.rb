@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.3
     class BeforeHead < InsertionMode
-      def text_token(token)
+      def character_token(token)
         token.data = token.data.lstrip
         halt true if token.data.length.zero?
       end

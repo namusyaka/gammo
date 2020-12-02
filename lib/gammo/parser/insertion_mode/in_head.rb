@@ -2,7 +2,7 @@ module Gammo
   class Parser
     # Section 12.2.6.4.4.
     class InHead < InsertionMode
-      def text_token(token)
+      def character_token(token)
         s = token.data.lstrip
         if s.length < token.data.length
           # add the initial whitespace to the current node.

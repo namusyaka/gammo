@@ -6,7 +6,7 @@ module Gammo
         parser.add_child Node::Comment.new(data: token.data)
       end
 
-      def text_token(token)
+      def character_token(token)
         text = token.data.each_char.with_object(String.new) { |c, s| s << c if c == ?\s }
         parser.add_text(text) if text != ''
       end

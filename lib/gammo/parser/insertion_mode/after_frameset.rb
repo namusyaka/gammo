@@ -8,7 +8,7 @@ module Gammo
         parser.add_child Node::Comment.new(data: token.data)
       end
 
-      def text_token(token)
+      def character_token(token)
         s = token.data.gsub(/[^\s]/, '')
         parser.add_text(s) unless s.empty?
       end
