@@ -15,4 +15,8 @@ class XPath::PredicateTest < Test::Unit::TestCase
   test 'predicate' do
     assert_equal 'abc', 3.times.map { |n| @doc.xpath("//li[#{n + 1}]").first.inner_text }.join
   end
+
+  test 'avoids aborting even if node_set does not match with right side' do
+    assert_equal 0, @doc.xpath('//li[class=foo]').length
+  end
 end

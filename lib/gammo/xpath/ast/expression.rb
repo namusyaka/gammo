@@ -63,6 +63,7 @@ module Gammo
                 return true if compare(context, ls, string_from_node(rnode))
               end
             end
+            return false
           end
           if value.number?
             node_set.each do |node|
