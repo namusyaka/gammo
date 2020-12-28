@@ -349,12 +349,12 @@ Node tests consist of specific node names or more general expressions. Although 
     <tr>
       <td><code>text()</code></td>
       <td>yes</td>
-      <td>Finds a node of type text, e.g. <code>hello</code> in <code><p>hello <a href="https://hello">world</a></p></code></td>
+      <td>Finds a node of type text, e.g. <code>hello</code> in <code>&lt;p&gt;hello &lt;a href="https://hello"&gt;world&lt;/a&gt;&lt;/p&gt;</td>
     </tr>
     <tr>
       <td><code>comment()</code></td>
       <td>yes</td>
-      <td>Finds a node of type comment, e.g. <code><!-- comment --></code></td>
+      <td>Finds a node of type comment, e.g. <code>&lt;!-- comment --&gt;</code></td>
     </tr>
     <tr>
       <td><code>node()</code></td>
