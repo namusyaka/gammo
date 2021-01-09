@@ -7,7 +7,7 @@
 [![GitHub license](https://img.shields.io/github/license/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/blob/master/LICENSE.txt)
 [![Documentation](http://img.shields.io/:yard-docs-38c800.svg)](http://www.rubydoc.info/gems/gammo/frames)
 
-Gammo provides a pure Ruby HTML5-compliant parser and XPath support for traversing the DOM tree built by Gammo.
+Gammo provides a pure Ruby HTML5-compliant parser and CSS selector / XPath support for traversing the DOM tree built by Gammo.
 The implementation of the HTML5 parsing algorithm in Gammo conforms [the WHATWG specification](https://html.spec.whatwg.org/multipage/parsing.html). Given an HTML string, Gammo parses it and builds DOM tree based on the tokenization and tree-construction algorithm defined in WHATWG parsing algorithm, these implementations are provided without any external dependencies.
 
 Gammo, its naming is inspired by [Gumbo](https://github.com/google/gumbo-parser). But Gammo is a fried tofu fritter made with vegetables.
@@ -19,8 +19,41 @@ require 'open-uri'
 parser = URI.open('https://google.com') { |f| Gammo.new(f.read) }
 document = parser.parse #=> #<Gammo::Node::Document>
 
-puts document.xpath('//title').first.inner_text #=> 'Google'
+puts document.css('title').first.inner_text #=> 'Google'
 ```
+
+* [Overview](#overview)
+   * [Features](#features)
+* [Tokenizaton](#tokenizaton)
+   * [Token types](#token-types)
+* [Parsing](#parsing)
+   * [Notes](#notes)
+* [Node](#node)
+* [DOM Tree Traversal](#dom-tree-traversal)
+   * [XPath 1.0 (experimental)](#xpath-10-experimental)
+      * [Example](#example)
+      * [Axis Specifiers](#axis-specifiers)
+      * [Node Test](#node-test)
+      * [Operators](#operators)
+      * [Functions](#functions)
+         * [Node set functions](#node-set-functions)
+         * [String Functions](#string-functions)
+         * [Boolean Functions](#boolean-functions)
+         * [Number Functions](#number-functions)
+   * [CSS Selector (experimental)](#css-selector-experimental)
+      * [Example](#example)
+      * [Groups of selectors](#groups-of-selectors)
+      * [Simple selectors](#simple-selectors)
+         * [Type selector &amp; Universal selector](#type-selector--universal-selector)
+         * [Attribute selectors](#attribute-selectors)
+         * [Class selectors](#class-selectors)
+         * [ID selectors](#id-selectors)
+         * [Pseudo-classes](#pseudo-classes)
+      * [Combinators](#combinators)
+* [Performance](#performance)
+* [References](#references)
+* [License](#license)
+* [Release History](#release-history)
 
 ## Overview
 
@@ -29,7 +62,7 @@ puts document.xpath('//title').first.inner_text #=> 'Google'
 - [Tokenization](#tokenization): Gammo has a tokenizer for implementing [the tokenization algorithm](https://html.spec.whatwg.org/multipage/parsing.html#tokenization).
 - [Parsing](#parsing): Gammo provides a parser which implements the parsing algorithm by the above tokenization and [the tree-construction algorithm](https://html.spec.whatwg.org/multipage/parsing.html#tree-construction).
 - [Node](#node): Gammo provides the nodes which implement [WHATWG DOM specification](https://dom.spec.whatwg.org/) partially.
-- [DOM Tree Traversal](#dom-tree-traversal): Gammo provides a way of DOM tree traversal.
+- [DOM Tree Traversal](#dom-tree-traversal): Gammo provides a way of DOM tree traversal (CSS selector / XPath).
 - [Performance](#performance): Gammo does not prioritize performance, and there are a few potential performance notes.
 
 ## Tokenizaton
@@ -168,8 +201,7 @@ For some nodes such as `Gammo::Node::Element` and `Gammo::Node::Document`, they 
 
 ## DOM Tree Traversal
 
-Currently, XPath 1.0 is the only way for traversing DOM tree built by Gammo.
-CSS selector support is also planned but not having any ETA.
+CSS selector and XPath-1.0 are the way for traversing DOM tree built by Gammo.
 
 ### XPath 1.0 (experimental)
 
@@ -549,9 +581,296 @@ XPath 1.0 defines four data types (nodeset, string, number, boolean) and there a
   </tbody>
 </table>
 
-### CSS Selector
+### CSS Selector (experimental)
 
-TBD.
+Gammo has an original lexer/parser for CSS Selector, it's provided as a helper in the DOM tree built by Gammo.
+Here is a simple example:
+
+```ruby
+document = Gammo.new('<!doctype html><input type="button">').parse
+node_set = document.css('input[type="button"]') #=> "<Gammo::CSSSelector::NodeSet>"
+
+node_set.length #=> 1
+node_set.first #=> "<Gammo::Node::Element>"
+```
+
+Since this is implemented by full scratch, Gammo is providing this support as a very experimental feature. Please file an issue if you find bugs.
+
+#### Example
+
+Before proceeding at the details of CSS Selector support, let's have a look at a few simple examples. Given a sample HTML text and its DOM tree:
+
+```ruby
+document = Gammo.new(<<-EOS).parse
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+  <h1>namusyaka.com</h1>
+  <p class="description">Here is a sample web site.</p>
+  <ul>
+    <li>hello</li>
+    <li>world</li>
+  </ul>
+  <ul id="links">
+    <li>Google <a href="https://google.com/">google.com</a></li>
+    <li>GitHub <a href="https://github.com/namusyaka">github.com/namusyaka</a></li>
+  </ul>
+</body>
+</html>
+EOS
+```
+
+The following CSS selector gets all `li` elements and prints thoese text contents:
+
+```ruby
+document.css('li').each do |elm|
+  puts elm.inner_text
+end
+```
+
+The following CSS selector gets all `li` elements under the `ul` element having the `id=links` attribute:
+
+```ruby
+document.xpath('ul#links li').each do |elm|
+  puts elm.inner_text
+end
+```
+
+#### Groups of selectors
+
+Gammo supports [groups of selectors](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#grouping), this means you can use `,` to traverse DOM tree by multiple selectors.
+
+```ruby
+require 'gammo'
+
+@doc = Gammo.new(<<-EOS).parse
+<!DOCTYPE html>
+<html>
+<head>
+<title>hello</title>
+<meta charset="utf8">
+</head>
+<body>
+<p id="hello">hello</p>
+<p id="world">world</p>
+EOS
+
+@doc.css('#hello, #world').map(&:inner_text).join(' ') #=> 'hello world'
+```
+
+#### Simple selectors
+
+##### Type selector & Universal selector
+
+Gammo supports the basic grammar of type selector and universal selector, but not namespaces.
+
+##### Attribute selectors
+
+See more details: [6.3. Attribute selectors](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#attribute-selectors)
+
+<table>
+  <thead>
+    <tr>
+      <th>Syntax</th>
+      <th>Supported</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>[att]</code></td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>[att=val]</code></td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>[att~=val]</code></td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>[att|=val]</code></td>
+      <td>yes</td>
+    </tr>
+  </tbody>
+</table>
+
+##### Class selectors
+
+Supported. See more details: [6.4. Class selectors](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#class-html)
+
+##### ID selectors
+
+Supported. See more details: [6.5. ID selectors](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#id-selectors)
+
+##### Pseudo-classes
+
+Partially supported. See the table below.
+
+<table>
+  <thead>
+    <tr>
+      <th>Class name</th>
+      <th>Supported</th>
+      <th>Can support?</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>:link</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:visited</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:hover</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:active</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:focus</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:target</code></td>
+      <td>no</td>
+      <td>no</td>
+    </tr>
+    <tr>
+      <td><code>:lang</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:enabled</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:disabled</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:checked</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:root</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:nth-child</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:nth-last-child</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:nth-of-type</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:nth-last-of-type</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:first-child</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:last-child</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:first-of-type</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:last-of-type</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:only-child</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:only-of-type</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:empty</code></td>
+      <td>no</td>
+      <td>yes</td>
+    </tr>
+    <tr>
+      <td><code>:not</code></td>
+      <td>yes</td>
+      <td>yes</td>
+    </tr>
+  </tbody>
+</table>
+
+#### Combinators
+
+See more details: [8. Combinators](https://www.w3.org/TR/2018/REC-selectors-3-20181106/#combinators)
+
+<table>
+  <thead>
+    <tr>
+      <th>Syntax</th>
+      <th>Supported</th>
+      <th>Desc</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>h1 em</code></td>
+      <td>yes</td>
+      <td>Descendant combinator</td>
+    </tr>
+    <tr>
+      <td><code>h1 > em</code></td>
+      <td>yes</td>
+      <td>Child combinator</td>
+    </tr>
+    <tr>
+      <td><code>math + p</code></td>
+      <td>yes</td>
+      <td>Next-sibling combinator</td>
+    </tr>
+    <tr>
+      <td><code>h1 ~ pre</code></td>
+      <td>yes</td>
+      <td>Subsequent-sibling combinator</td>
+    </tr>
+  </tbody>
+</table>
 
 ## Performance
 

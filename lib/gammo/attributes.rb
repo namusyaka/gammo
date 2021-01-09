@@ -86,6 +86,11 @@ module Gammo
       @attributes_hash.to_s
     end
 
+    def has_key?(key)
+      @attributes_hash.key?(key.to_s)
+    end
+    alias_method :key?, :has_key?
+
     private
 
     def attributes_to_hash(attrs)

@@ -1,4 +1,4 @@
-require 'gammo/xpath/ast/subclassify'
+require 'gammo/modules/subclassify'
 require 'gammo/xpath/errors'
 
 module Gammo
