@@ -25,7 +25,11 @@ task :generate do
 end
 
 namespace :racc do
-  task :parser do
+  task :xpath do
     `bundle exec racc lib/gammo/xpath/parser.y -o lib/gammo/xpath/parser.rb`
+  end
+
+  task :css do
+    `bundle exec racc lib/gammo/css_selector/parser.y -o lib/gammo/css_selector/parser.rb`
   end
 end

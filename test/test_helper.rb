@@ -14,3 +14,4 @@ require "test/unit"
 require "gammo"
 
 module XPath end
+module CSSSelector end

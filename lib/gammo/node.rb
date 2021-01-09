@@ -1,3 +1,4 @@
+require 'gammo/css_selector'
 require 'gammo/xpath'
 require 'gammo/attributes'
 
@@ -58,6 +59,7 @@ module Gammo
     # Represents the root document token.
     class Document < Node
       include XPath
+      include CSSSelector
     end
 
     # Represents the element token including start, end and self-closing token.

@@ -1,5 +1,5 @@
 require 'gammo/xpath/node_set'
-require 'gammo/xpath/ast/subclassify'
+require 'gammo/modules/subclassify'
 require 'gammo/tags'
 
 module Gammo
