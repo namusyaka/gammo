@@ -893,6 +893,8 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Release History
 
+- v0.3.0
+    - CSS selector support [#11](https://github.com/namusyaka/gammo/pull/11)
 - v0.2.0
     - XPath 1.0 support [#4](https://github.com/namusyaka/gammo/pull/4)
 - v0.1.0
