@@ -1,6 +1,6 @@
 # Gammo - A pure-Ruby HTML5 parser
 
-[![Build Status](https://travis-ci.org/namusyaka/gammo.svg?branch=master)](https://travis-ci.org/namusyaka/gammo)
+[![Testing](https://github.com/namusyaka/gammo/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/namusyaka/gammo/actions/workflows/test.yml)
 [![GitHub issues](https://img.shields.io/github/issues/namusyaka/gammo)](https://github.com/namusyaka/gammo/issues)
 [![GitHub forks](https://img.shields.io/github/forks/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/network)
 [![GitHub stars](https://img.shields.io/github/stars/namusyaka/gammo?color=brightgreen)](https://github.com/namusyaka/gammo/stargazers)
