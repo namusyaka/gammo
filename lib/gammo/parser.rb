@@ -234,7 +234,7 @@ module Gammo
           when TABLE_SCOPE
             return -1 if tag == Tags::Html || tag == Tags::Table || tag == Tags::Template
           when SELECT_SCOPE
-            return -1 if tag == Tags::Optgroup && tag == Tags::Option
+            return -1 if tag == Tags::Optgroup || tag == Tags::Option
           else
             raise ParseError, 'unreachable parsing error, please report to github'
           end
